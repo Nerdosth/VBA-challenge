@@ -1,0 +1,172 @@
+Sub Format_All()
+
+    Dim Ws As Worksheet
+    
+        For Each Ws In Worksheets
+            Ws.Activate
+            
+            Ticker
+            Yearly_Change
+            Percent_Change
+            Total_Volume
+            Summary_Titles
+                   
+        Next Ws
+
+End Sub
+
+Sub Summary_Titles()
+
+            Range("K1").Value = "Ticker"
+            Range("K1").Font.Bold = True
+            Range("L1").Value = "Yearly Change"
+            Range("L1").Font.Bold = True
+            Range("M1").Value = "Percent Change"
+            Range("M1").Font.Bold = True
+            Range("N1").Value = "Total Volume"
+            Range("N1").Font.Bold = True
+            Columns("K:N").AutoFit
+End Sub
+
+Sub Ticker()
+
+        Dim Ticker As String
+        Dim lRow As Long
+            lRow = Range("A2").End(xlDown).Row
+        Dim Summary_Table_Row As Long
+            Summary_Table_Row = 2
+                    
+                For Row = 2 To lRow
+            
+                    If Cells(Row + 1, 1).Value <> Cells(Row, 1).Value Then
+                    
+                        'store the unique stock ticker into "Ticker"
+                        Ticker = Cells(Row, 1).Value
+                            'paste the unique ticker symbol into summary table
+                            Range("K" & Summary_Table_Row).Value = Ticker
+                            
+            Summary_Table_Row = Summary_Table_Row + 1
+                    
+                    End If
+                        
+                Next Row
+                   
+End Sub
+
+
+Sub Yearly_Change()
+
+    Dim Begin_Open As Double
+    Dim End_Close As Double
+    Dim Year_Change As Double
+    Dim lRow As Long
+        lRow = Range("A2").End(xlDown).Row
+    Dim Summary_Table_Row As Long
+        Summary_Table_Row = 2
+            
+            For Row = 2 To lRow
+                If Cells(Row - 1, 1).Value <> Cells(Row, 1).Value Then
+                
+                Begin_Open = Cells(Row, 3).Value
+                
+                ElseIf Cells(Row + 1, 1).Value <> Cells(Row, 1).Value Then
+                
+                End_Close = Cells(Row, 6).Value
+
+                    Year_Change = End_Close - Begin_Open
+                    
+                    Range("L" & Summary_Table_Row).Value = Year_Change
+            
+                    Summary_Table_Row = Summary_Table_Row + 1
+                    
+                End If
+                    
+        
+            Next Row
+        
+
+End Sub
+
+Sub Percent_Change()
+
+    Dim Begin_Open As Double
+    Dim End_Close As Double
+    Dim Percent_Change As Double
+    Dim lRow As Long
+        lRow = Range("A2").End(xlDown).Row
+    Dim sumlRow As Long
+        sumlRow = Range("K2").End(xlDown).Row
+    Dim Summary_Table_Row As Long
+        Summary_Table_Row = 2
+            
+            For Row = 2 To lRow
+                If Cells(Row - 1, 1).Value <> Cells(Row, 1).Value Then
+                
+                Begin_Open = Cells(Row, 3).Value
+                
+                ElseIf Cells(Row + 1, 1).Value <> Cells(Row, 1).Value Then
+                
+                End_Close = Cells(Row, 6).Value
+
+                    Percent_Change = (End_Close - Begin_Open) / Begin_Open
+                    
+                    Range("M" & Summary_Table_Row).Value = Percent_Change
+                    Range("M" & Summary_Table_Row).Style = "Percent"
+                    Range("M" & Summary_Table_Row).NumberFormat = "0.00%"
+        
+            
+                Summary_Table_Row = Summary_Table_Row + 1
+             
+                    
+                End If
+                    
+        
+            Next Row
+   
+            For Row = 2 To sumlRow
+            
+                If Cells(Row, "M").Value > 0 Then
+                    Cells(Row, "M").Interior.ColorIndex = 4
+                ElseIf Cells(Row, "M").Value < 0 Then
+                    Cells(Row, "M").Interior.ColorIndex = 3
+                End If
+                
+            Next Row
+
+End Sub
+
+Sub Total_Volume()
+
+    Dim Ticker As String
+    Dim Total_Volume As Double
+        Total_Volume = 0
+    Dim lRow As Long
+        lRow = Range("A2").End(xlDown).Row
+    Dim Summary_Table_Row As Long
+        Summary_Table_Row = 2
+ 
+ 
+              For Row = 2 To lRow
+              
+                 If Cells(Row + 1, 1).Value <> Cells(Row, 1).Value Then
+                 
+                   Ticker = Cells(Row, 1).Value
+                    
+                   Total_Volume = Total_Volume + Cells(Row, 7).Value
+                    
+                    Range("N" & Summary_Table_Row).Value = Total_Volume
+                    
+                    Summary_Table_Row = Summary_Table_Row + 1
+                
+                Total_Volume = 0
+                
+                Else
+                
+                Total_Volume = Total_Volume + Cells(Row, 7).Value
+                    
+                End If
+                    
+        
+            Next Row
+
+End Sub
